@@ -17,7 +17,10 @@ jobs:
         run: |
           brew install ldid xz
           git clone --recursive https://github.com/theos/theos.git $THEOS
+          rm -rf $THEOS/sdks
           git clone --depth=1 https://github.com/theos/sdks.git $THEOS/sdks
+          echo "Available SDKs:"
+          ls $THEOS/sdks/
         env:
           THEOS: /Users/runner/theos
 
@@ -25,7 +28,9 @@ jobs:
         run: |
           export THEOS=/Users/runner/theos
           export THEOS_MAKE_PATH=$THEOS/makefiles
-          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk
+          SDK=$(ls $THEOS/sdks/ | grep iPhoneOS | head -1)
+          echo "Using SDK: $SDK"
+          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/$SDK
 
       - name: Upload DEB artifact
         uses: actions/upload-artifact@v4

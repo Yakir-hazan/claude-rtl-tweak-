@@ -1,39 +1,32 @@
-name: Build ClaudeRTL Tweak
+name: Build Tweak
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+on: [push]
 
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Install Theos
+      - name: Install dependencies
+        run: brew install ldid xz
+
+      - name: Setup Theos
         run: |
-          brew install ldid xz
           git clone --recursive https://github.com/theos/theos.git $THEOS
-          rm -rf $THEOS/sdks
-          git clone --depth=1 https://github.com/theos/sdks.git $THEOS/sdks
-          echo "Available SDKs:"
-          ls $THEOS/sdks/
+          curl -LO https://github.com/theos/sdks/releases/download/2023-09-22/iPhoneOS16.5.sdk.tar.xz
+          mkdir -p $THEOS/sdks
+          tar -xf iPhoneOS16.5.sdk.tar.xz -C $THEOS/sdks
         env:
-          THEOS: /Users/runner/theos
+          THEOS: ${{ github.workspace }}/theos
 
       - name: Build DEB
-        run: |
-          export THEOS=/Users/runner/theos
-          export THEOS_MAKE_PATH=$THEOS/makefiles
-          SDK=$(ls $THEOS/sdks/ | grep iPhoneOS | head -1)
-          echo "Using SDK: $SDK"
-          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/$SDK
+        run: make package
+        env:
+          THEOS: ${{ github.workspace }}/theos
 
-      - name: Upload DEB artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload DEB
+        uses: actions/upload-artifact@v3
         with:
-          name: ClaudeRTL-deb
+          name: claude-rtl-tweak
           path: packages/*.deb

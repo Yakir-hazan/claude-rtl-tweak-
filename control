@@ -1,0 +1,9 @@
+Package: com.yakir.claudertl
+Name: ClaudeRTL
+Depends: mobilesubstrate
+Version: 1.0
+Architecture: iphoneos-arm64
+Description: RTL CSS injection for Claude.ai PWA
+Maintainer: Yakir
+Author: Yakir
+Section: Tweaks

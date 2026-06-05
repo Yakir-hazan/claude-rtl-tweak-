@@ -17,9 +17,8 @@ jobs:
         run: |
           git clone --recursive https://github.com/theos/theos.git $THEOS
           mkdir -p $THEOS/sdks
-          curl -L https://github.com/theos/sdks/releases/download/2023-09-22/iPhoneOS16.5.sdk.tar.xz -o sdk.tar.xz
-          file sdk.tar.xz
-          tar -xf sdk.tar.xz -C $THEOS/sdks
+          git clone --depth=1 https://github.com/aricloverCN/sdks.git /tmp/sdks
+          cp -r /tmp/sdks/iPhoneOS16.5.sdk $THEOS/sdks/
 
       - name: Build DEB
         env:

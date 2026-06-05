@@ -12,18 +12,19 @@ jobs:
         run: brew install ldid xz
 
       - name: Setup Theos
+        env:
+          THEOS: ${{ github.workspace }}/theos
         run: |
           git clone --recursive https://github.com/theos/theos.git $THEOS
-          curl -LO https://github.com/theos/sdks/releases/download/2023-09-22/iPhoneOS16.5.sdk.tar.xz
           mkdir -p $THEOS/sdks
-          tar -xf iPhoneOS16.5.sdk.tar.xz -C $THEOS/sdks
-        env:
-          THEOS: ${{ github.workspace }}/theos
+          curl -L https://github.com/theos/sdks/releases/download/2023-09-22/iPhoneOS16.5.sdk.tar.xz -o sdk.tar.xz
+          file sdk.tar.xz
+          tar -xf sdk.tar.xz -C $THEOS/sdks
 
       - name: Build DEB
-        run: make package
         env:
           THEOS: ${{ github.workspace }}/theos
+        run: make package
 
       - name: Upload DEB
         uses: actions/upload-artifact@v4

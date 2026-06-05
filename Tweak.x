@@ -3,14 +3,11 @@
 %hook WKWebViewConfiguration
 
 - (instancetype)init {
-    id orig = %orig;
+    WKWebViewConfiguration *orig = %orig;
     
-    NSString *css = @"p,div,span,li,h1,h2,h3,h4,textarea,[contenteditable]{"
-                    @"direction:rtl!important;text-align:right!important}";
-    NSString *js = [NSString stringWithFormat:
-                    @"var s=document.createElement('style');"
-                    @"s.textContent='%@';"
-                    @"document.documentElement.appendChild(s);", css];
+    NSString *js = @"var s=document.createElement('style');"
+                   @"s.textContent='p,div,span,li,h1,h2,h3,h4,textarea,[contenteditable]{direction:rtl!important;text-align:right!important}';"
+                   @"document.documentElement.appendChild(s);";
     
     WKUserScript *script = [[WKUserScript alloc]
         initWithSource:js

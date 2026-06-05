@@ -6,5 +6,4 @@ TWEAK_NAME = ClaudeRTL
 ClaudeRTL_FILES = Tweak.x
 ClaudeRTL_CFLAGS = -fobjc-arc
 ClaudeRTL_FRAMEWORKS = WebKit
-ClaudeRTL_FILTER = com.apple.WebKit.WebContent
 include $(THEOS_MAKE_PATH)/tweak.mk

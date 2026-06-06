@@ -2,14 +2,19 @@
 
 %hook WKWebView
 
-- (void)loadRequest:(NSURLRequest *)request {
-    %orig;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        NSString *js = @"var s=document.createElement('style');"
-                       @"s.textContent='p,div,span,li,h1,h2,h3,h4,textarea,[contenteditable]{direction:rtl!important;text-align:right!important}';"
-                       @"document.head.appendChild(s);";
-        [self evaluateJavaScript:js completionHandler:nil];
-    });
+- (instancetype)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration {
+    NSString *rtlScript = @"var style = document.createElement('style');"
+                          @"style.innerHTML = 'body,div,p,span,input,textarea{"
+                          @"direction:rtl!important;text-align:right!important}';"
+                          @"document.head.appendChild(style);";
+    
+    WKUserScript *script = [[WKUserScript alloc]
+        initWithSource:rtlScript
+        injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+        forMainFrameOnly:NO];
+    
+    [configuration.userContentController addUserScript:script];
+    return %orig(frame, configuration);
 }
 
 %end

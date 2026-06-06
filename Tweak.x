@@ -1,23 +1,15 @@
 #import <WebKit/WebKit.h>
 
-__attribute__((constructor)) static void init() {}
+%hook WKWebView
 
-%hook WKWebViewConfiguration
-
-- (instancetype)init {
-    WKWebViewConfiguration *orig = %orig;
-    
-    NSString *js = @"var s=document.createElement('style');"
-                   @"s.textContent='p,div,span,li,h1,h2,h3,h4,textarea,[contenteditable]{direction:rtl!important;text-align:right!important}';"
-                   @"document.documentElement.appendChild(s);";
-    
-    WKUserScript *script = [[WKUserScript alloc]
-        initWithSource:js
-        injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
-        forMainFrameOnly:NO];
-    
-    [orig.userContentController addUserScript:script];
-    return orig;
+- (void)loadRequest:(NSURLRequest *)request {
+    %orig;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        NSString *js = @"var s=document.createElement('style');"
+                       @"s.textContent='p,div,span,li,h1,h2,h3,h4,textarea,[contenteditable]{direction:rtl!important;text-align:right!important}';"
+                       @"document.head.appendChild(s);";
+        [self evaluateJavaScript:js completionHandler:nil];
+    });
 }
 
 %end

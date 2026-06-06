@@ -1,5 +1,7 @@
 #import <WebKit/WebKit.h>
 
+__attribute__((constructor)) static void init() {}
+
 %hook WKWebViewConfiguration
 
 - (instancetype)init {
